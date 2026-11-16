@@ -1,0 +1,78 @@
+registries:
+
+  job:
+    kind: FileJobRegistry
+    description: File-based job registry for local development
+    location: examples/jobs
+    timeout: 5
+    readonly: false
+    cache: false
+    failfast: true
+
+  secret:
+    kind: EnvSecretRegistry
+    description: Secret registry for credentials and sensitive configuration
+    timeout: 5
+    readonly: false
+    cache: false
+    failfast: true
+
+  schema:
+    kind: FileSchemaRegistry
+    description: File-based schema registry for local development
+    location: examples/schemas
+    timeout: 5
+    readonly: false
+    cache: false
+    failfast: false
+    subject_template: "{{org}}.{{region}}.{{domain}}.{{subdomain}}.{{layer}}.{{product}}.{{model}}"
+    default_version: latest
+
+  lineage:
+    kind: NoOpLineageRegistry
+    name: LineageRegistry
+    description: Lineage registry for tracking data pipeline provenance
+    location: http://localhost:5000
+    timeout: 5
+    readonly: false
+    cache: false
+    failfast: false
+    emit_level: job
+
+  batch:
+    kind: NoOpBatchRegistry
+    description: Batch registry for job execution control
+    location: "postgresql://postgres:{{ENV.PGPASSWORD|default('postgres')}}@localhost:5432/postgres"
+    timeout: 5
+    readonly: false
+    cache: false
+    failfast: true
+    retries: 3
+
+  metric:
+    kind: NoOpMetricRegistry
+    description: Metric registry for job observability and monitoring
+    location: http://localhost:9091
+    timeout: 5
+    readonly: false
+    cache: false
+    failfast: false
+
+runtime_defaults:
+
+  - kind: SparkRunner
+    streaming: false
+    log_level: "{{ ENV.LOG_LEVEL | default('WARN') }}"
+
+  - kind: SparkFileInput
+    format: parquet
+    schema_subject: auto
+
+  - kind: SparkFileOutput
+    format: parquet
+    mode: append
+    schema_subject: auto
+
+  - kind: SparkWordCountTransform
+    content_field: value
+    lowercase: true
