@@ -1,0 +1,103 @@
+[project]
+name = "tio_spark"
+version = "0.0.0"
+description = "Spark family for Tiozin, your friendly ETL framework"
+readme = "README.md"
+requires-python = ">=3.11"
+
+license = "MPL-2.0"
+authors = [
+  { name = "Fabricio D'Morison", email = "fabricio.dmorison@gmail.com" }
+]
+
+keywords = ["etl", "data", "pipeline", "framework", "tiozin", "spark", "pyspark"]
+
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
+]
+
+dependencies = [
+  "tiozin >=4.1.0,<5.0.0",
+]
+
+[project.optional-dependencies]
+pyspark = [
+  "pyspark[connect] >=3.5.0,<4.0.0",
+  # NOTE: Temporary dependencies (to be removed)
+  # Required due to unnecessary runtime imports in datacontract-cli schema converters
+  "databricks-sdk ~=0.102.0",
+]
+
+[dependency-groups]
+dev = [
+  { include-group = "lint" },
+  { include-group = "test" },
+]
+test = [
+  "tio_spark[pyspark]",
+  "pytest ==8.4.2",
+  "pytest-cov ==7.0.0",
+  "assertpy ==1.1",
+  "pyarrow ==23.0.0",
+]
+lint = [
+  "ruff ==0.14.10",
+  "pre-commit ==4.3.0",
+]
+
+[project.entry-points."tiozin.family"]
+tio_spark = "tio_spark"
+
+[project.urls]
+Homepage = "https://github.com/fdmorison/tio_spark"
+Repository = "https://github.com/fdmorison/tio_spark"
+Issues = "https://github.com/fdmorison/tio_spark/issues"
+
+[tool.uv]
+required-version = ">=0.8.1"
+
+[[tool.uv.index]]
+name = "pypi"
+url = "https://pypi.org/simple"
+default = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--import-mode=importlib --cov --cov-report term"
+
+[tool.coverage.run]
+source = ["tio_spark"]
+omit = [
+  "tio_spark/**/__init__.py",
+]
+
+[tool.coverage.report]
+fail_under = 60
+show_missing = true
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["B008", "B904", "B021", "B017"]
+
+[tool.ruff.lint.pycodestyle]
+max-doc-length = 100
+
+[tool.ruff.lint.isort]
+known-first-party = ["tio_spark"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.sdist]
+only-include = [
+  "tio_spark",
+  "README.md",
+  "pyproject.toml"
+]

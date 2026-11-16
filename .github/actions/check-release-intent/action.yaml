@@ -1,0 +1,38 @@
+name: "Check release intent"
+description: "Fails if the PR title's type disagrees with whether production code changed"
+
+runs:
+  using: composite
+  steps:
+    - name: Detect release-triggering paths
+      id: filter
+      uses: dorny/paths-filter@v3
+      with:
+        filters: |
+          release:
+            - 'tio_spark/**/*.py'
+            - 'pyproject.toml'
+            - 'docs/**'
+            - 'README.md'
+
+    - name: Validate release intent
+      uses: actions/github-script@v7
+      env:
+        TOUCHED_PRODUCTION: ${{ steps.filter.outputs.release }}
+      with:
+        script: |
+          const PRODUCTION_CHANGE_TYPE = /^(feat|fix|perf|refactor|style|build|docs)(\(.+\))?!?:/;
+
+          const { data: pr } = await github.rest.pulls.get({
+            ...context.repo,
+            pull_number: context.payload.pull_request.number,
+          });
+          const title = pr.title;
+          const titleChangesProduction = PRODUCTION_CHANGE_TYPE.test(title);
+          const codeChangesProduction = process.env.TOUCHED_PRODUCTION === "true";
+
+          if (titleChangesProduction === codeChangesProduction) {
+            console.log("✅ Title and code changes agree on production changes");
+            return;
+          }
+          core.setFailed(`PR title "${title}" and the files it touches disagree on production changes`);

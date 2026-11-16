@@ -1,0 +1,32 @@
+name: PR Code
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - "tio_spark/**/*.py"
+      - "tests/**/*.py"
+      - "pyproject.toml"
+
+permissions:
+  contents: read
+
+jobs:
+  code:
+    if: ${{ !startsWith(github.head_ref, 'release-please--') }}
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup environment
+        uses: ./.github/actions/setup-env
+
+      - name: Install Dependencies
+        run: make install-dev
+
+      - name: Lint
+        run: make check
+
+      - name: Tests
+        run: make test
