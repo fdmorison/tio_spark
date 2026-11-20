@@ -1,6 +1,6 @@
 # Installation
 
-`tio_spark` is installed as a Python package. It requires Python 3.11 or later and installs [Tiozin](https://github.com/fdmorison/tiozin) 4.1.0 or later as a dependency.
+`tio_spark` is installed as a Python package. It requires Python 3.11 or later and installs [Tiozin](https://github.com/fdmorison/tiozin) 5.0.0 or later as a dependency.
 
 ```bash
 pip install "tio_spark[pyspark]"
