@@ -1,0 +1,27 @@
+kind: LinearJob
+name: ingestion_hamlet_job
+owner: literature@tiozin.com
+maintainer: tiozin
+cost_center: tio_scrooge
+
+org: tiozin
+region: latam
+domain: literature
+subdomain: classics
+product: shakespeare
+model: hamlet
+layer: raw
+
+runner:
+  kind: SparkRunner
+
+inputs:
+  - kind: SparkFileInput
+    name: load_hamlet
+    path: examples/data/{{product}}/{{model}}.txt
+    format: text
+
+outputs:
+  - kind: SparkFileOutput
+    name: save_hamlet
+    path: .output/lake-{{domain}}-{{layer}}/{{product}}/{{model}}/date={{today}}
