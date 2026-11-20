@@ -45,7 +45,6 @@ dev = [
   { include-group = "test" },
 ]
 test = [
-  "tio_spark[pyspark]",
   "pytest ==8.4.2",
   "pytest-cov ==7.0.0",
   "assertpy ==1.1",
