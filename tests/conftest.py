@@ -1,5 +1,6 @@
 import uuid
 from collections.abc import Generator
+from pathlib import Path
 from typing import Any
 
 import pyspark
@@ -29,8 +30,15 @@ SPARK = SPARK_PROFILES[f"{PYSPARK.major}.{PYSPARK.minor}"]
 
 
 @pytest.fixture(scope="session", autouse=True)
-def spark(tmp_path_factory: pytest.TempPathFactory) -> Generator[SparkSession, Any, None]:
+def spark(
+    tmp_path_factory: pytest.TempPathFactory, worker_id: str
+) -> Generator[SparkSession, Any, None]:
+    """
+    Each xdist worker gets its own Ivy directory, so parallel workers never
+    download the same jar into the same file.
+    """
     iceberg_warehouse = tmp_path_factory.mktemp("iceberg")
+    ivy_dir = Path.home() / ".ivy2" / worker_id
     with pytest.MonkeyPatch.context() as mp:
         mp.delenv("SPARK_HOME", raising=False)
         builder: SparkSession.Builder = SparkSession.builder
@@ -44,6 +52,7 @@ def spark(tmp_path_factory: pytest.TempPathFactory) -> Generator[SparkSession, A
             .config("spark.ui.enabled", "false")
             .config("spark.sql.warehouse.dir", tmp_path_factory.mktemp(str(uuid.uuid4())))
             # Packages
+            .config("spark.jars.ivy", str(ivy_dir))
             .config(
                 "spark.jars.packages",
                 f"org.apache.iceberg:{SPARK['iceberg']},"
