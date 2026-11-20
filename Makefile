@@ -27,8 +27,13 @@ check:
 	@uv run ruff check .
 	@uv run ruff format --check
 
-test: clean
-	@uv run pytest -vvv .
+test: test35 test40 
+
+test35: clean
+	@uv run --extra pyspark35 pytest -vvv .
+
+test40: clean
+	@uv run --extra pyspark40 pytest -vvv .
 
 build:
 	@uv build
