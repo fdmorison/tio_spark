@@ -20,8 +20,6 @@ runner:
   kind: tio_spark:SparkRunner
 ```
 
-Neither `runner:` block sets more than the `kind`. Arguments that a job leaves out, such as the Spark `log_level`, can come from `tiozin.yaml`, the [Tiozin settings file](https://github.com/fdmorison/tiozin/blob/main/docs/settings/index.md).
-
 ## Installation
 
 `tio_spark` is installed as a Python dependency. Once it is installed, its plugins are available in any job.
