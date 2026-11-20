@@ -9,12 +9,12 @@ hooks:
 
 install:
 	@rm -rf .venv
-	@uv sync
+	@uv sync --extra pyspark35
 	@uv pip install -e .
 
 install-dev:
 	@rm -rf .venv
-	@uv sync
+	@uv sync --extra pyspark35
 	@uv pip install -e .
 	@uv run pre-commit install
 	@rm -rf *.egg-info
@@ -27,7 +27,7 @@ check:
 	@uv run ruff check .
 	@uv run ruff format --check
 
-test: test35 test40 
+test: test35 test40
 
 test35: clean
 	@uv run --extra pyspark35 pytest -vvv .
