@@ -11,8 +11,6 @@ After installation, its plugins are available by class name in any job:
 ```yaml
 runner:
   kind: SparkRunner
-  spark.executor.memory: 4g
-  spark.sql.shuffle.partitions: 200
 ```
 
 If another installed family defines a class with the same name, qualify the kind with the family name:
@@ -20,6 +18,15 @@ If another installed family defines a class with the same name, qualify the kind
 ```yaml
 runner:
   kind: tio_spark:SparkRunner
+```
+
+Spark config options go directly in the runner:
+
+```yaml
+runner:
+  kind: SparkRunner
+  spark.executor.memory: 4g
+  spark.sql.shuffle.partitions: 200
 ```
 
 ## Installation
