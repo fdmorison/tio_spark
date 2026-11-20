@@ -1,91 +1,50 @@
 # tio_spark
 
-`tio_spark` is the Spark family for [Tiozin](https://github.com/fdmorison/tiozin). It provides Tiozin plugins that run data jobs on [Apache Spark](https://spark.apache.org/docs/latest/), in batch or streaming mode.
+`tio_spark` is the Spark family for [Tiozin](https://github.com/fdmorison/tiozin): a set of Tiozin plugins that run data jobs on [Apache Spark](https://spark.apache.org/docs/latest/), in batch or streaming mode. See [The Family Model](https://github.com/fdmorison/tiozin/blob/main/docs/concepts/family.md) for how families fit into Tiozin.
 
-A family is an installable package of Tiozin plugins that share the same runtime. See [The Family Model](https://github.com/fdmorison/tiozin/blob/main/docs/concepts/family.md) for how families fit into Tiozin.
-
-## Usage
-
-After installation, its plugins are available by class name in any job:
-
-```yaml
-runner:
-  kind: SparkRunner
-```
-
-If another installed family defines a class with the same name, qualify the kind with the family name:
-
-```yaml
-runner:
-  kind: tio_spark:SparkRunner
-```
-
-Spark config options go directly in the runner:
-
-```yaml
-runner:
-  kind: SparkRunner
-  spark.executor.memory: 4g
-  spark.sql.shuffle.partitions: 200
-```
-
-## Installation
-
-`tio_spark` is installed as a Python dependency. Once it is installed, its plugins are available in any job.
-
-The package provides one extra, `pyspark`.
-
-The `pyspark` extra installs [PySpark](https://spark.apache.org/docs/latest/api/python/) 3.5 or later, below 4.0, with its [Spark Connect](https://spark.apache.org/docs/latest/spark-connect-overview.html) dependencies.
+## One-Minute Example
 
 ```bash
 pip install "tio_spark[pyspark]"
 ```
 
-If another package already provides PySpark, install `tio_spark` without the extra:
+This job loads the text of Hamlet into a data lake. [SparkRunner](https://github.com/fdmorison/tio_spark/blob/main/docs/runner.md) runs it, [SparkFileInput](https://github.com/fdmorison/tio_spark/blob/main/docs/file-input.md) reads the text, and [SparkFileOutput](https://github.com/fdmorison/tio_spark/blob/main/docs/file-output.md) writes it.
+
+```yaml
+kind: LinearJob
+name: ingestion_hamlet_job
+owner: literature@tiozin.com
+maintainer: tiozin
+cost_center: tio_scrooge
+
+org: tiozin
+region: latam
+domain: literature
+subdomain: classics
+product: shakespeare
+model: hamlet
+layer: raw
+
+runner:
+  kind: SparkRunner
+
+inputs:
+  - kind: SparkFileInput
+    name: load_hamlet
+    path: examples/data/{{product}}/{{model}}.txt
+    format: text
+
+outputs:
+  - kind: SparkFileOutput
+    name: save_hamlet
+    path: .output/lake-{{domain}}-{{layer}}/{{product}}/{{model}}/date={{today}}
+```
+
+Run it:
 
 ```bash
-pip install tio_spark
+tiozin run examples/jobs/oneminute.yaml
 ```
-
-Add it to the project's dependencies, such as in `pyproject.toml`:
-
-```toml
-[project]
-dependencies = [
-  "tio_spark[pyspark]",
-]
-```
-
-## Setting Up tiozin.yaml
-
-`tiozin.yaml` is the [Tiozin settings file](https://github.com/fdmorison/tiozin/blob/main/docs/settings/index.md). It configures [registries](https://github.com/fdmorison/tiozin/blob/main/docs/settings/index.md#registries), such as the job and schema registries, and default plugin arguments under [`runtime_defaults`](https://github.com/fdmorison/tiozin/blob/main/docs/settings/index.md#runtime-defaults).
-
-The example settings use `runtime_defaults` to set the Spark log level.
-
-1. Copy the `.env.example` file to `.env` at the repository root, then review the variables in the `.env` file. The `.env` file is gitignored.
-
-   ```bash
-   cp .env.example .env
-   ```
-
-2. Copy the `tiozin.example.yaml` file to `tiozin.yaml` at the repository root. The `tiozin.yaml` file is gitignored.
-
-   ```bash
-   cp tiozin.example.yaml tiozin.yaml
-   ```
-
-3. Find the log level under `runtime_defaults`. [SparkRunner](https://github.com/fdmorison/tio_spark/blob/main/docs/runner.md) reads it from an environment variable:
-
-   ```yaml
-   runtime_defaults:
-
-     - kind: SparkRunner
-       log_level: "{{ ENV.LOG_LEVEL | default('WARN') }}"
-   ```
-
-   A job that leaves `log_level` out takes it from here. The value comes from the `LOG_LEVEL` variable in the `.env` file, and falls back to `WARN` when the variable is not set.
-
-   Spark accepts levels such as `WARN`, `INFO`, and `ERROR`, but not `WARNING`. See [`SparkContext.setLogLevel`](https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.SparkContext.setLogLevel.html) for the full list.
 
 ## Plugins
 
@@ -100,11 +59,27 @@ The example settings use `runtime_defaults` to set the Spark log level.
 - [SparkFileOutput](https://github.com/fdmorison/tio_spark/blob/main/docs/file-output.md): writes a Spark `DataFrame` to files.
 - [SparkTableOutput](https://github.com/fdmorison/tio_spark/blob/main/docs/table-output.md): writes a Spark `DataFrame` to an Apache Iceberg or [Delta Lake](https://docs.delta.io/) table registered in a catalog.
 
-The [family documentation](https://github.com/fdmorison/tio_spark/blob/main/docs/index.md) lists every plugin page and explains how data flows between steps.
+## Documentation
 
-## Learn More
+### Getting Started
+- [Installation](https://github.com/fdmorison/tio_spark/blob/main/docs/installation.md)
+- [Getting Started](https://github.com/fdmorison/tio_spark/blob/main/docs/getting-started.md)
 
-- [Examples](https://github.com/fdmorison/tio_spark/blob/main/docs/examples.md)
+### Plugins
+- [Family Guide](https://github.com/fdmorison/tio_spark/blob/main/docs/index.md)
+- [How Data Flows Between Steps](https://github.com/fdmorison/tio_spark/blob/main/docs/index.md#how-data-flows-between-steps)
+
+### Examples
+- [Example Jobs](https://github.com/fdmorison/tio_spark/blob/main/docs/examples.md)
+
+### Writing Custom Steps
+- [Accessing the Spark Session](https://github.com/fdmorison/tio_spark/blob/main/docs/index.md#accessing-the-spark-session)
 - [Creating Pluggable Tiozins](https://github.com/fdmorison/tiozin/blob/main/docs/extending/tiozins.md)
+
+### Learn More
 - [Tiozin](https://github.com/fdmorison/tiozin)
 - [Apache Spark](https://spark.apache.org/docs/latest/)
+
+## License
+
+This project is licensed under the [Mozilla Public License 2.0](https://github.com/fdmorison/tio_spark/blob/main/LICENSE).
