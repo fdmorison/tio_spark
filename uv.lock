@@ -3341,7 +3341,7 @@ test = [
 requires-dist = [
     { name = "databricks-sdk", marker = "extra == 'pyspark'", specifier = "~=0.102.0" },
     { name = "pyspark", extras = ["connect"], marker = "extra == 'pyspark'", specifier = ">=3.5.0,<4.0.0" },
-    { name = "tiozin", specifier = ">=4.1.0,<5.0.0" },
+    { name = "tiozin", specifier = ">=4.1.0" },
 ]
 provides-extras = ["pyspark"]
 

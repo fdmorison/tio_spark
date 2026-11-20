@@ -20,7 +20,7 @@ classifiers = [
 ]
 
 dependencies = [
-  "tiozin >=4.1.0,<5.0.0",
+  "tiozin >=4.1.0",
 ]
 
 [project.optional-dependencies]
