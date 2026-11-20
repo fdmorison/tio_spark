@@ -47,11 +47,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Setup environment
         uses: ./.github/actions/setup-env
-        with:
-          fetch-depth: 0
 
       - name: Release Please (draft)
         uses: googleapis/release-please-action@v4
