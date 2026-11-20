@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/fdmorison/tio_spark/compare/tio_spark-v0.1.0...tio_spark-v0.1.1) (2026-11-20)
+
+
+### Features
+
+* **tio_spark:** Support PySpark 4.0 with versioned install extras ([#7](https://github.com/fdmorison/tio_spark/issues/7)) ([0899c29](https://github.com/fdmorison/tio_spark/commit/0899c2984362c6abdc8168537642c7acd7c74ce9))
+
 ## 0.1.0 (2026-11-20)
 
 
