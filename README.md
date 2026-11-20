@@ -5,7 +5,7 @@
 ## One-Minute Example
 
 ```bash
-pip install "tio_spark[pyspark]"
+pip install "tio_spark[pyspark35]"
 ```
 
 This job loads the text of Hamlet into a data lake. [SparkRunner](https://github.com/fdmorison/tio_spark/blob/main/docs/runner.md) runs it, [SparkFileInput](https://github.com/fdmorison/tio_spark/blob/main/docs/file-input.md) reads the text, and [SparkFileOutput](https://github.com/fdmorison/tio_spark/blob/main/docs/file-output.md) writes it.
@@ -45,6 +45,8 @@ Run it:
 ```bash
 tiozin run examples/jobs/oneminute.yaml
 ```
+
+For more details, see the [Installation](https://github.com/fdmorison/tio_spark/blob/main/docs/installation.md) guide or the [Getting Started](https://github.com/fdmorison/tio_spark/blob/main/docs/getting-started.md) guide.
 
 ## Plugins
 

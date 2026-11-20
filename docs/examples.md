@@ -51,6 +51,8 @@ tiozin run examples/jobs/shakespeare/refined_hamlet_job.yaml
 
 Iceberg demonstrates the ecommerce data on [Apache Iceberg](https://iceberg.apache.org/docs/latest/) tables instead of files.
 
+These jobs add the Iceberg runtime for Spark 3.5 through `jars_packages`, so they run as they are on PySpark 3.5, installed with the `pyspark35` extra described in [Choosing a PySpark Version](installation.md#choosing-a-pyspark-version). On Spark 4.0, replace that package with the Spark 4.0 build, as described in [Adding the Iceberg Runtime](iceberg-runner.md#adding-the-iceberg-runtime).
+
 Ingestion jobs:
 
 - [`iceberg/ingestion_customers_job.yaml`](../examples/jobs/iceberg/ingestion_customers_job.yaml): loads the customers into an Iceberg table.

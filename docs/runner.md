@@ -46,6 +46,8 @@ runner:
     - io.delta:delta-spark_2.12:3.2.0
 ```
 
+These coordinates are builds for Spark 3.5 with Scala 2.12. A package built for Spark must match the Spark and Scala versions of the installed PySpark. On Spark 4.0, use the Scala 2.13 builds, such as `org.apache.iceberg:iceberg-spark-runtime-4.0_2.13:1.10.1` and `io.delta:delta-spark_2.13:4.0.1`.
+
 ## Connecting to a Hive metastore
 
 Set `enable_hive_support: true` to connect to a Hive metastore and read or write Hive tables. Requires a Hive-compatible environment with `hive-site.xml` on the classpath.
