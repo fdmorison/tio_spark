@@ -12,14 +12,19 @@ from tio_spark import SparkRunner
 
 @pytest.fixture(scope="session", autouse=True)
 def spark(tmp_path_factory: pytest.TempPathFactory) -> Generator[SparkSession, Any, None]:
-    builder: SparkSession.Builder = SparkSession.builder
-    spark = (
-        builder.appName("test")
-        .config("spark.sql.session.timeZone", "UTC")
-        .config("spark.sql.adaptive.enabled", "true")
-        .config("spark.sql.warehouse.dir", tmp_path_factory.mktemp(str(uuid.uuid4())))
-        .getOrCreate()
-    )
+    with pytest.MonkeyPatch.context() as mp:
+        mp.delenv("SPARK_HOME", raising=False)
+        builder: SparkSession.Builder = SparkSession.builder
+        spark = (
+            builder.appName("test")
+            .config("spark.sql.session.timeZone", "UTC")
+            .config("spark.sql.adaptive.enabled", "true")
+            .config("spark.sql.shuffle.partitions", "1")
+            .config("spark.default.parallelism", "1")
+            .config("spark.ui.enabled", "false")
+            .config("spark.sql.warehouse.dir", tmp_path_factory.mktemp(str(uuid.uuid4())))
+            .getOrCreate()
+        )
     yield spark
     spark.stop()
 

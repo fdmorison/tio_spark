@@ -427,8 +427,8 @@ def test_to_partition_column_should_apply_bucket_count_and_column() -> None:
     result = to_partition_column(expr)
 
     # Assert
-    actual = result._jc.expr().toString()
-    expected = "bucket(16, 'customer_id)"
+    actual = result._jc
+    expected = sf.bucket(16, "customer_id")._jc
     assert actual == expected
 
 
