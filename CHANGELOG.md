@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/fdmorison/tio_spark/compare/tio_spark-v0.1.1...tio_spark-v0.1.2) (2026-11-20)
+
+
+### Bug Fixes
+
+* require tiozin 5 ([#10](https://github.com/fdmorison/tio_spark/issues/10)) ([ee3825e](https://github.com/fdmorison/tio_spark/commit/ee3825e4e45c54c0bca11fe530e3ecdc1beec0b5))
+
 ## [0.1.1](https://github.com/fdmorison/tio_spark/compare/tio_spark-v0.1.0...tio_spark-v0.1.1) (2026-11-20)
 
 
