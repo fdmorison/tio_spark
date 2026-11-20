@@ -11,6 +11,8 @@ After installation, its plugins are available by class name in any job:
 ```yaml
 runner:
   kind: SparkRunner
+  spark.executor.memory: 4g
+  spark.sql.shuffle.partitions: 200
 ```
 
 If another installed family defines a class with the same name, qualify the kind with the family name:
