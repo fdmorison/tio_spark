@@ -25,10 +25,18 @@ dependencies = [
 
 [project.optional-dependencies]
 pyspark = [
-  "pyspark[connect] >=3.5.0,<4.0.0",
+  "pyspark[connect] >=3.5.0",
   # NOTE: Temporary dependencies (to be removed)
   # Required due to unnecessary runtime imports in datacontract-cli schema converters
   "databricks-sdk ~=0.102.0",
+]
+pyspark35 = [
+  "tio_spark[pyspark]",
+  "pyspark[connect] >=3.5.0,<3.6.0",
+]
+pyspark40 = [
+  "tio_spark[pyspark]",
+  "pyspark[connect] >=4.0.0,<4.1.0",
 ]
 
 [dependency-groups]
@@ -42,6 +50,7 @@ test = [
   "pytest-cov ==7.0.0",
   "assertpy ==1.1",
   "pyarrow ==23.0.0",
+  "pytest-xdist ==3.8.0",
 ]
 lint = [
   "ruff ==0.14.10",
@@ -58,6 +67,12 @@ Issues = "https://github.com/fdmorison/tio_spark/issues"
 
 [tool.uv]
 required-version = ">=0.8.1"
+conflicts = [
+  [
+    { extra = "pyspark35" },
+    { extra = "pyspark40" },
+  ],
+]
 
 [[tool.uv.index]]
 name = "pypi"
@@ -66,7 +81,7 @@ default = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "--import-mode=importlib --cov --cov-report term"
+addopts = "--import-mode=importlib --cov --cov-report term -n 2 --dist loadfile"
 
 [tool.coverage.run]
 source = ["tio_spark"]

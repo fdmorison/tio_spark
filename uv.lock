@@ -2,12 +2,14 @@ version = 1
 revision = 3
 requires-python = ">=3.11"
 resolution-markers = [
-    "python_full_version >= '3.14' and sys_platform == 'win32'",
-    "python_full_version >= '3.14' and sys_platform == 'emscripten'",
-    "python_full_version >= '3.14' and sys_platform != 'emscripten' and sys_platform != 'win32'",
+    "python_full_version >= '3.14'",
     "python_full_version >= '3.12' and python_full_version < '3.14'",
     "python_full_version < '3.12'",
 ]
+conflicts = [[
+    { package = "tio-spark", extra = "pyspark35" },
+    { package = "tio-spark", extra = "pyspark40" },
+]]
 
 [[package]]
 name = "adlfs"
@@ -62,7 +64,7 @@ dependencies = [
     { name = "frozenlist" },
     { name = "multidict" },
     { name = "propcache" },
-    { name = "typing-extensions", marker = "python_full_version < '3.13'" },
+    { name = "typing-extensions", marker = "python_full_version < '3.13' or (extra == 'extra-9-tio-spark-pyspark35' and extra == 'extra-9-tio-spark-pyspark40')" },
     { name = "yarl" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/6c/4c/bdccd81e9ee225b69c60e7766c9a5b05364f118f4d383713b89a682d772d/aiohttp-3.14.5.tar.gz", hash = "sha256:5558a7f5a05af9ecf744af91e5baefc436f93c9333e656c27ec253f9a6bbe178", size = 8078052, upload-time = "2026-10-11T01:05:12.408Z" }
@@ -226,7 +228,7 @@ version = "1.4.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "frozenlist" },
-    { name = "typing-extensions", marker = "python_full_version < '3.13'" },
+    { name = "typing-extensions", marker = "python_full_version < '3.13' or (extra == 'extra-9-tio-spark-pyspark35' and extra == 'extra-9-tio-spark-pyspark40')" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/61/62/06741b579156360248d1ec624842ad0edf697050bbaf7c3e46394e106ad1/aiosignal-1.4.0.tar.gz", hash = "sha256:f47eecd9468083c2029cc99945502cb7708b082c232f9aca65da147157b251c7", size = 25007, upload-time = "2025-07-03T22:54:43.528Z" }
 wheels = [
@@ -257,7 +259,7 @@ version = "4.14.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "idna" },
-    { name = "typing-extensions", marker = "python_full_version < '3.13'" },
+    { name = "typing-extensions", marker = "python_full_version < '3.13' or (extra == 'extra-9-tio-spark-pyspark35' and extra == 'extra-9-tio-spark-pyspark40')" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/61/cc/a381afa6efea9f496eff839d4a6a1aed3bfafc7b3ab4b0d1b243a12573dd/anyio-4.14.2.tar.gz", hash = "sha256:cfa139f3ed1a23ee8f88a145ddb5ac7605b8bbfd8592baacd7ce3d8bb4313c7f", size = 260176, upload-time = "2026-07-12T20:29:07.082Z" }
 wheels = [
@@ -550,7 +552,7 @@ name = "cffi"
 version = "2.1.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "pycparser", marker = "implementation_name != 'PyPy'" },
+    { name = "pycparser", marker = "implementation_name != 'PyPy' or (extra == 'extra-9-tio-spark-pyspark35' and extra == 'extra-9-tio-spark-pyspark40')" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/9e/ef/008a1939e372c06329a3fce4279c02f328488f3526744906eeec3da7ad5f/cffi-2.1.1.tar.gz", hash = "sha256:dd31f52ea1086513bb9df30f8fcee9b8918323ae067a3d5b78bc826a000712be", size = 530807, upload-time = "2026-08-03T21:21:18.939Z" }
 wheels = [
@@ -948,7 +950,7 @@ name = "cryptography"
 version = "50.0.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "cffi", marker = "platform_python_implementation != 'PyPy'" },
+    { name = "cffi", marker = "platform_python_implementation != 'PyPy' or (extra == 'extra-9-tio-spark-pyspark35' and extra == 'extra-9-tio-spark-pyspark40')" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/9d/af/182eb91b0df3fe75c4d9f26fe70684569566745f6ba7e5c9c73a862c5252/cryptography-50.0.2.tar.gz", hash = "sha256:7b46165bb56eb4704e2eaaf86f3c940d19154535d9b0ca7d6d590b04060e00d5", size = 880623, upload-time = "2026-09-30T15:30:04.884Z" }
 wheels = [
@@ -1110,6 +1112,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/fb/c7/94f97e6e74482a50b5fc798856b6cc06e8d072ab05a0b74cb5d87bd0d065/environs-14.6.0.tar.gz", hash = "sha256:ed2767588deb503209ffe4dd9bb2b39311c2e4e7e27ce2c64bf62ca83328d068", size = 35563, upload-time = "2026-02-20T04:02:08.869Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/97/a8/c070e1340636acb38d4e6a7e45c46d168a462b48b9b3257e14ca0e5af79b/environs-14.6.0-py3-none-any.whl", hash = "sha256:f8fb3d6c6a55872b0c6db077a28f5a8c7b8984b7c32029613d44cef95cfc0812", size = 17205, upload-time = "2026-02-20T04:02:07.299Z" },
+]
+
+[[package]]
+name = "execnet"
+version = "2.1.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/bf/89/780e11f9588d9e7128a3f87788354c7946a9cbb1401ad38a48c4db9a4f07/execnet-2.1.2.tar.gz", hash = "sha256:63d83bfdd9a23e35b9c6a3261412324f964c2ec8dcd8d3c6916ee9373e0befcd", size = 166622, upload-time = "2025-11-12T09:56:37.75Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ab/84/02fc1827e8cdded4aa65baef11296a9bbe595c474f0d6d758af082d849fd/execnet-2.1.2-py3-none-any.whl", hash = "sha256:67fba928dd5a544b783f6056f449e5e3931a5c378b128bc18501f7ea79e296ec", size = 40708, upload-time = "2025-11-12T09:56:36.333Z" },
 ]
 
 [[package]]
@@ -2678,7 +2689,7 @@ name = "pynacl"
 version = "1.6.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "cffi", marker = "platform_python_implementation != 'PyPy'" },
+    { name = "cffi", marker = "platform_python_implementation != 'PyPy' or (extra == 'extra-9-tio-spark-pyspark35' and extra == 'extra-9-tio-spark-pyspark40')" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/d9/9a/4019b524b03a13438637b11538c82781a5eda427394380381af8f04f467a/pynacl-1.6.2.tar.gz", hash = "sha256:018494d6d696ae03c7e656e5e74cdfd8ea1326962cc401bcf018f1ed8436811c", size = 3511692, upload-time = "2026-01-01T17:48:10.851Z" }
 wheels = [
@@ -2712,19 +2723,48 @@ wheels = [
 name = "pyspark"
 version = "3.5.9"
 source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version >= '3.14'",
+    "python_full_version >= '3.12' and python_full_version < '3.14'",
+    "python_full_version < '3.12'",
+]
 dependencies = [
-    { name = "py4j" },
+    { name = "py4j", marker = "extra == 'extra-9-tio-spark-pyspark35'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/95/ce/81e53e729790556e3983e95de1a7d5df91a34adfcd34b5a5ab0e0c6e9b33/pyspark-3.5.9.tar.gz", hash = "sha256:ea27adc39ddac9413b8951e45aa748cbed6c785971b81386efc41938f6243d93", size = 317858593, upload-time = "2026-07-16T08:52:04.494Z" }
 
 [package.optional-dependencies]
 connect = [
-    { name = "googleapis-common-protos" },
-    { name = "grpcio" },
-    { name = "grpcio-status" },
-    { name = "numpy" },
-    { name = "pandas" },
-    { name = "pyarrow" },
+    { name = "googleapis-common-protos", marker = "extra == 'extra-9-tio-spark-pyspark35'" },
+    { name = "grpcio", marker = "extra == 'extra-9-tio-spark-pyspark35'" },
+    { name = "grpcio-status", marker = "extra == 'extra-9-tio-spark-pyspark35'" },
+    { name = "numpy", marker = "extra == 'extra-9-tio-spark-pyspark35'" },
+    { name = "pandas", marker = "extra == 'extra-9-tio-spark-pyspark35'" },
+    { name = "pyarrow", marker = "extra == 'extra-9-tio-spark-pyspark35'" },
+]
+
+[[package]]
+name = "pyspark"
+version = "4.0.5"
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version >= '3.14'",
+    "python_full_version >= '3.12' and python_full_version < '3.14'",
+    "python_full_version < '3.12'",
+]
+dependencies = [
+    { name = "py4j", marker = "extra == 'extra-9-tio-spark-pyspark40' or extra != 'extra-9-tio-spark-pyspark35'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/3e/ee/2377eee07ee94739e953231558040a5ee671092780a3eed0a9e175f059e7/pyspark-4.0.5.tar.gz", hash = "sha256:a0d44b0e7faf0458ad83b7aa664e7ed8b96beed8a55d66ce3b0dfac2309dfca6", size = 434376598, upload-time = "2026-10-27T18:39:58.059Z" }
+
+[package.optional-dependencies]
+connect = [
+    { name = "googleapis-common-protos", marker = "extra == 'extra-9-tio-spark-pyspark40' or extra != 'extra-9-tio-spark-pyspark35'" },
+    { name = "grpcio", marker = "extra == 'extra-9-tio-spark-pyspark40' or extra != 'extra-9-tio-spark-pyspark35'" },
+    { name = "grpcio-status", marker = "extra == 'extra-9-tio-spark-pyspark40' or extra != 'extra-9-tio-spark-pyspark35'" },
+    { name = "numpy", marker = "extra == 'extra-9-tio-spark-pyspark40' or extra != 'extra-9-tio-spark-pyspark35'" },
+    { name = "pandas", marker = "extra == 'extra-9-tio-spark-pyspark40' or extra != 'extra-9-tio-spark-pyspark35'" },
+    { name = "pyarrow", marker = "extra == 'extra-9-tio-spark-pyspark40' or extra != 'extra-9-tio-spark-pyspark35'" },
 ]
 
 [[package]]
@@ -2732,7 +2772,7 @@ name = "pytest"
 version = "8.4.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "colorama", marker = "sys_platform == 'win32'" },
+    { name = "colorama", marker = "sys_platform == 'win32' or (extra == 'extra-9-tio-spark-pyspark35' and extra == 'extra-9-tio-spark-pyspark40')" },
     { name = "iniconfig" },
     { name = "packaging" },
     { name = "pluggy" },
@@ -2755,6 +2795,19 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/5e/f7/c933acc76f5208b3b00089573cf6a2bc26dc80a8aece8f52bb7d6b1855ca/pytest_cov-7.0.0.tar.gz", hash = "sha256:33c97eda2e049a0c5298e91f519302a1334c26ac65c1a483d6206fd458361af1", size = 54328, upload-time = "2025-09-09T10:57:02.113Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/ee/49/1377b49de7d0c1ce41292161ea0f721913fa8722c19fb9c1e3aa0367eecb/pytest_cov-7.0.0-py3-none-any.whl", hash = "sha256:3b8e9558b16cc1479da72058bdecf8073661c7f57f7d3c5f22a1c23507f2d861", size = 22424, upload-time = "2025-09-09T10:57:00.695Z" },
+]
+
+[[package]]
+name = "pytest-xdist"
+version = "3.8.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "execnet" },
+    { name = "pytest" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/78/b4/439b179d1ff526791eb921115fca8e44e596a13efeda518b9d845a619450/pytest_xdist-3.8.0.tar.gz", hash = "sha256:7e578125ec9bc6050861aa93f2d59f1d8d085595d6551c2c90b6f4fad8d3a9f1", size = 88069, upload-time = "2025-07-01T13:30:59.346Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ca/31/d4e37e9e550c2b92a9cbc2e4d0b7420a27224968580b5a447f420847c975/pytest_xdist-3.8.0-py3-none-any.whl", hash = "sha256:202ca578cfeb7370784a8c33d6d05bc6e13b4f25b5053c30a152269fd10f0b88", size = 46396, upload-time = "2025-07-01T13:30:56.632Z" },
 ]
 
 [[package]]
@@ -2994,7 +3047,7 @@ source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
     { name = "rpds-py" },
-    { name = "typing-extensions", marker = "python_full_version < '3.13'" },
+    { name = "typing-extensions", marker = "python_full_version < '3.13' or (extra == 'extra-9-tio-spark-pyspark35' and extra == 'extra-9-tio-spark-pyspark40')" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/22/f5/df4e9027acead3ecc63e50fe1e36aca1523e1719559c499951bb4b53188f/referencing-0.37.0.tar.gz", hash = "sha256:44aefc3142c5b842538163acb373e24cce6632bd54bdb01b21ad5863489f50d8", size = 78036, upload-time = "2025-10-13T15:30:48.871Z" }
 wheels = [
@@ -3312,7 +3365,16 @@ dependencies = [
 [package.optional-dependencies]
 pyspark = [
     { name = "databricks-sdk" },
-    { name = "pyspark", extra = ["connect"] },
+    { name = "pyspark", version = "3.5.9", source = { registry = "https://pypi.org/simple" }, extra = ["connect"], marker = "extra == 'extra-9-tio-spark-pyspark35'" },
+    { name = "pyspark", version = "4.0.5", source = { registry = "https://pypi.org/simple" }, extra = ["connect"], marker = "extra == 'extra-9-tio-spark-pyspark40' or extra != 'extra-9-tio-spark-pyspark35'" },
+]
+pyspark35 = [
+    { name = "databricks-sdk" },
+    { name = "pyspark", version = "3.5.9", source = { registry = "https://pypi.org/simple" }, extra = ["connect"], marker = "extra == 'extra-9-tio-spark-pyspark35'" },
+]
+pyspark40 = [
+    { name = "databricks-sdk" },
+    { name = "pyspark", version = "4.0.5", source = { registry = "https://pypi.org/simple" }, extra = ["connect"], marker = "extra == 'extra-9-tio-spark-pyspark40'" },
 ]
 
 [package.dev-dependencies]
@@ -3322,6 +3384,7 @@ dev = [
     { name = "pyarrow" },
     { name = "pytest" },
     { name = "pytest-cov" },
+    { name = "pytest-xdist" },
     { name = "ruff" },
     { name = "tio-spark", extra = ["pyspark"] },
 ]
@@ -3334,16 +3397,21 @@ test = [
     { name = "pyarrow" },
     { name = "pytest" },
     { name = "pytest-cov" },
+    { name = "pytest-xdist" },
     { name = "tio-spark", extra = ["pyspark"] },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "databricks-sdk", marker = "extra == 'pyspark'", specifier = "~=0.102.0" },
-    { name = "pyspark", extras = ["connect"], marker = "extra == 'pyspark'", specifier = ">=3.5.0,<4.0.0" },
+    { name = "pyspark", extras = ["connect"], marker = "extra == 'pyspark'", specifier = ">=3.5.0" },
+    { name = "pyspark", extras = ["connect"], marker = "extra == 'pyspark35'", specifier = ">=3.5.0,<3.6.0" },
+    { name = "pyspark", extras = ["connect"], marker = "extra == 'pyspark40'", specifier = ">=4.0.0,<4.1.0" },
+    { name = "tio-spark", extras = ["pyspark"], marker = "extra == 'pyspark35'" },
+    { name = "tio-spark", extras = ["pyspark"], marker = "extra == 'pyspark40'" },
     { name = "tiozin", specifier = ">=4.1.0" },
 ]
-provides-extras = ["pyspark"]
+provides-extras = ["pyspark", "pyspark35", "pyspark40"]
 
 [package.metadata.requires-dev]
 dev = [
@@ -3352,6 +3420,7 @@ dev = [
     { name = "pyarrow", specifier = "==23.0.0" },
     { name = "pytest", specifier = "==8.4.2" },
     { name = "pytest-cov", specifier = "==7.0.0" },
+    { name = "pytest-xdist", specifier = "==3.8.0" },
     { name = "ruff", specifier = "==0.14.10" },
     { name = "tio-spark", extras = ["pyspark"] },
 ]
@@ -3364,6 +3433,7 @@ test = [
     { name = "pyarrow", specifier = "==23.0.0" },
     { name = "pytest", specifier = "==8.4.2" },
     { name = "pytest-cov", specifier = "==7.0.0" },
+    { name = "pytest-xdist", specifier = "==3.8.0" },
     { name = "tio-spark", extras = ["pyspark"] },
 ]
 

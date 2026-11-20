@@ -11,6 +11,27 @@ runner:
   catalog_warehouse: s3://my-bucket/warehouse
 ```
 
+## Adding the Iceberg Runtime
+
+SparkIcebergRunner configures the Iceberg catalog, but it does not add Iceberg to the Spark classpath. If Iceberg is not already on the classpath, add the Iceberg Spark runtime package through `jars_packages`, as the example jobs do:
+
+```yaml
+runner:
+  kind: SparkIcebergRunner
+  catalog_name: example
+  catalog_type: hadoop
+  catalog_warehouse: .output/iceberg
+  jars_packages:
+    - org.apache.iceberg:iceberg-spark-runtime-3.5_2.12:1.7.1
+```
+
+The runtime package name carries the Spark and Scala versions it was built for, so it must match the installed PySpark:
+
+- Spark 3.5: `org.apache.iceberg:iceberg-spark-runtime-3.5_2.12`
+- Spark 4.0: `org.apache.iceberg:iceberg-spark-runtime-4.0_2.13`
+
+For the Iceberg versions available for each Spark line, see the [Iceberg releases page](https://iceberg.apache.org/releases/).
+
 ## All available options
 
 Inherits all [SparkRunner](runner.md) options, plus:
