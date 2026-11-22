@@ -70,6 +70,8 @@ class SparkStepProxy(wrapt.ObjectProxy):
     def _register_view(self, df: DataFrame) -> DataFrame:
         """
         Registers a DataFrame as a Spark temporary view using the step name.
+
+        The registered DataFrame carries the metadata of the step schema in its columns.
         """
         if not isinstance(df, (DataFrame, ConnectDataFrame)):
             return df
@@ -78,6 +80,7 @@ class SparkStepProxy(wrapt.ObjectProxy):
         observed = Schema.from_spark(df.schema.jsonValue())
         contract = step.context.output_schema
         step.context.output_schema = observed.document_from(contract) if contract else observed
+        df = df.to(StructType.fromJson(step.context.output_schema.to_spark()))
 
         view_name = step.name
 

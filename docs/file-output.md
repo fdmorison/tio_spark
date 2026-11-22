@@ -65,7 +65,7 @@ outputs:
 
 ## Column Comments
 
-If the step sets [`schema_subject`](https://github.com/fdmorison/tiozin/blob/main/docs/how-to/schemas.md#attach-a-schema-to-a-step), the DataFrame the output writes carries each description from that schema as the column comment. Columns without a description in the schema get no comment.
+If the step sets [`schema_subject`](https://github.com/fdmorison/tiozin/blob/main/docs/how-to/schemas.md#attach-a-schema-to-a-step), the DataFrame the output writes carries each description from that schema as the column comment. Columns without a description in the schema get no comment from it, but keep any comment they already carry from an earlier step.
 
 ```yaml
 outputs:
@@ -83,7 +83,7 @@ outputs:
 
 The output path is reported as the dataset written by this step following the [OpenLineage naming spec](https://openlineage.io/docs/spec/naming/).
 
-The dataset also carries the [schema](https://openlineage.io/docs/spec/facets/dataset-facets/schema) of the DataFrame, so its columns and types always match the data. If the step sets [`schema_subject`](https://github.com/fdmorison/tiozin/blob/main/docs/how-to/schemas.md#attach-a-schema-to-a-step), the field descriptions from the registry schema are added to the columns with the same name. Columns that are not in the registry schema, such as ones added by a transform, are reported without a description.
+The dataset also carries the [schema](https://openlineage.io/docs/spec/facets/dataset-facets/schema) of the DataFrame, so its columns and types always match the data. If the step sets [`schema_subject`](https://github.com/fdmorison/tiozin/blob/main/docs/how-to/schemas.md#attach-a-schema-to-a-step), the field descriptions from the registry schema are added to the columns with the same name. Columns that are not in the registry schema keep any description they carry from an earlier step, such as an input that set `schema_subject`. Columns with no description anywhere, such as ones added by a transform, are reported without one.
 
 ```yaml
 outputs:

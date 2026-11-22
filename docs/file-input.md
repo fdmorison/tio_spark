@@ -73,11 +73,41 @@ inputs:
     delimiter: ";"
 ```
 
+## Column Comments
+
+If the step sets [`schema_subject`](https://github.com/fdmorison/tiozin/blob/main/docs/how-to/schemas.md#attach-a-schema-to-a-step), the DataFrame it reads carries each description from that schema as the column comment, and the next steps receive those columns. Columns without a description in the schema get no comment from it.
+
+Spark keeps column comments on columns passed along unchanged, such as with `SELECT *`, so a description set on an input can reach the written data even when the output sets no `schema_subject`.
+
+```yaml
+inputs:
+  - kind: SparkFileInput
+    name: load_customers
+    path: examples/data/ecommerce/customers.csv
+    format: csv
+    header: true
+    schema_subject: auto
+
+transforms:
+  - kind: SparkSqlTransform
+    name: add_metadata
+    query: SELECT *, '{{job.run_id}}' AS _{{layer}}_run_id FROM @data
+
+outputs:
+  - kind: SparkFileOutput
+    name: save_customers
+    path: .output/lake-{{domain}}-{{layer}}/{{product}}/{{model}}
+    format: parquet
+    mode: overwrite
+# → id: comment "Unique customer identifier"
+# → _raw_run_id: no comment
+```
+
 ## Lineage
 
 Each path is reported as a separate input dataset following the [OpenLineage naming spec](https://openlineage.io/docs/spec/naming/).
 
-The step also reports the [schema](https://openlineage.io/docs/spec/facets/dataset-facets/schema) of the DataFrame it reads, so the columns and types always match the data. If the step sets [`schema_subject`](https://github.com/fdmorison/tiozin/blob/main/docs/how-to/schemas.md#attach-a-schema-to-a-step), the field descriptions from the registry schema are added to the columns with the same name. Columns that are not in the registry schema are reported without a description.
+The step also reports the [schema](https://openlineage.io/docs/spec/facets/dataset-facets/schema) of the DataFrame it reads, so the columns and types always match the data. If the step sets [`schema_subject`](https://github.com/fdmorison/tiozin/blob/main/docs/how-to/schemas.md#attach-a-schema-to-a-step), the field descriptions from the registry schema are added to the columns with the same name. Columns that are not in the registry schema keep any comment the data already carries as their description, and the rest are reported without one.
 
 ## Streaming mode
 
