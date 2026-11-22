@@ -77,6 +77,8 @@ inputs:
 
 Each path is reported as a separate input dataset following the [OpenLineage naming spec](https://openlineage.io/docs/spec/naming/).
 
+The step also reports the [schema](https://openlineage.io/docs/spec/facets/dataset-facets/schema) of the DataFrame it reads, so the columns and types always match the data. If the step sets [`schema_subject`](https://github.com/fdmorison/tiozin/blob/main/docs/how-to/schemas.md#attach-a-schema-to-a-step), the field descriptions from the registry schema are added to the columns with the same name. Columns that are not in the registry schema are reported without a description.
+
 ## Streaming mode
 
 When the runner has `streaming: true`, `SparkFileInput` uses `spark.readStream` instead of `spark.read`. In streaming mode, `path` must be a single directory path. Providing a list of paths raises an error.

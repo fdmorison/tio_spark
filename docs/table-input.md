@@ -133,6 +133,8 @@ table: my_catalog.default.sales
 # → name: default.sales
 ```
 
+The step also reports the [schema](https://openlineage.io/docs/spec/facets/dataset-facets/schema) of the DataFrame it reads, so the columns and types always match the data. If the step sets [`schema_subject`](https://github.com/fdmorison/tiozin/blob/main/docs/how-to/schemas.md#attach-a-schema-to-a-step), the field descriptions from the registry schema are added to the columns with the same name. Columns that are not in the registry schema are reported without a description.
+
 See [How to Configure OpenLineage](https://github.com/fdmorison/tiozin/blob/main/docs/how-to/openlineage.md) for how datasets are emitted, and the [OpenLineage naming spec](https://openlineage.io/docs/spec/naming/) for the naming conventions.
 
 ## Related
