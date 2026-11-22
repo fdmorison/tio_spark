@@ -18,24 +18,6 @@ The [example jobs](examples.md) run from the root of a clone of this repository.
 
 Tiozin reads both files from the directory where the job runs, so run every job from the repository root.
 
-## When the Shell Already Sets a Variable
-
-The variables in the `.env` file win over the ones already set in the shell. Variables that the `.env` file leaves out keep their shell values.
-
-This matters most for `SPARK_HOME`. If the shell profile exports a `SPARK_HOME` for another Spark installation, the one in the `.env` file replaces it, so the job runs on the Spark that the `.env` file points to:
-
-```bash
-# Shell profile
-export SPARK_HOME=/opt/spark/3.5.4
-
-# The .env file
-SPARK_HOME=.venv/lib/python3.11/site-packages/pyspark
-
-# → the job runs with SPARK_HOME=.venv/lib/python3.11/site-packages/pyspark
-```
-
-Point `SPARK_HOME` at a Spark installation that matches the installed [PySpark](https://spark.apache.org/docs/latest/api/python/getting_started/install.html) version. With PySpark 4.0 and a `SPARK_HOME` that points to Spark 3.5, for example, the job fails with `TypeError: 'JavaPackage' object is not callable`.
-
 ## What the `tiozin.yaml` File Configures
 
 The `tiozin.yaml` file is the [Tiozin settings file](https://github.com/fdmorison/tiozin/blob/main/docs/settings/index.md). It configures [registries](https://github.com/fdmorison/tiozin/blob/main/docs/settings/index.md#registries), such as the job and schema registries, and default plugin arguments under [`runtime_defaults`](https://github.com/fdmorison/tiozin/blob/main/docs/settings/index.md#runtime-defaults).

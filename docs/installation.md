@@ -33,6 +33,24 @@ pip install tio_spark
 
 Without an extra, only the plugins are installed and PySpark is not. This keeps a PySpark from PyPI from shadowing the cluster's own Spark.
 
+## When the Shell Already Sets `SPARK_HOME`
+
+Tiozin loads the project `.env` file, the first one found from the working directory upward. Its variables win over the ones already set in the shell, and the variables it leaves out keep their shell values.
+
+If the shell profile exports a `SPARK_HOME` for another Spark installation, the one in the `.env` file replaces it:
+
+```bash
+# Shell profile
+export SPARK_HOME=/opt/spark/3.5.4
+
+# The .env file
+SPARK_HOME=.venv/lib/python3.11/site-packages/pyspark
+
+# → the job runs with SPARK_HOME=.venv/lib/python3.11/site-packages/pyspark
+```
+
+Point `SPARK_HOME` at a Spark installation that matches the installed [PySpark](https://spark.apache.org/docs/latest/api/python/getting_started/install.html) version. On a cluster that already provides Spark, a `SPARK_HOME` in the project `.env` file replaces the cluster's own.
+
 ## Installing Through Tiozin
 
 The Tiozin package exposes matching extras that install this family:
