@@ -30,7 +30,6 @@ registries:
 
   lineage:
     kind: NoOpLineageRegistry
-    name: LineageRegistry
     description: Lineage registry for tracking data pipeline provenance
     location: http://localhost:5000
     timeout: 5
@@ -68,9 +67,15 @@ runtime_defaults:
     format: parquet
     schema_subject: auto
 
+  - kind: SparkTableInput
+    schema_subject: auto
+
   - kind: SparkFileOutput
     format: parquet
     mode: append
+    schema_subject: auto
+
+  - kind: SparkTableOutput
     schema_subject: auto
 
   - kind: SparkWordCountTransform
