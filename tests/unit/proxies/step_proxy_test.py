@@ -9,7 +9,7 @@ from tiozin.api.metadata.bundle import Registries
 from tiozin.family.tio_kernel import FileSchemaRegistry
 from tiozin.utils.runtime import tio_alias
 
-from tests.stubs import JobStub, TransformStub
+from tests.stubs import JobStub, OutputStub, TransformStub
 from tio_spark import SparkFileInput, SparkFileOutput, SparkWordCountTransform
 from tio_spark.compose.step_proxy import SparkStepProxy
 
@@ -270,6 +270,90 @@ def test_write_should_keep_dataframe_structure_when_contract_differs(
             },
         ],
         "metadata": {},
+    }
+    assert actual == expected
+
+
+# =============================================================================
+# Testing SparkStepProxy.write — contract descriptions as column comments
+# =============================================================================
+
+
+def test_write_should_give_output_step_contract_descriptions_as_column_comments(
+    spark: SparkSession, spark_job: JobStub, tmp_path: Path
+):
+    # Arrange
+    registry = FileSchemaRegistry(location=str(tmp_path / "schemas"))
+    registry.register(
+        "orders",
+        Schema(name="orders")
+        .integer("id", description="Order id.")
+        .string("name", description="Customer name."),
+    )
+    df = spark.createDataFrame(
+        [(1, "alice")],
+        schema="`id` INT, `name` STRING",
+    )
+
+    # Act
+    with Context.for_job(spark_job, registries=Registries(schema=registry)):
+        step = OutputStub(name="orders_output", schema_subject="orders")
+        result = step.write(df)
+
+    # Assert
+    actual = result.schema.jsonValue()
+    expected = {
+        "type": "struct",
+        "fields": [
+            {
+                "name": "id",
+                "type": "integer",
+                "nullable": True,
+                "metadata": {"comment": "Order id."},
+            },
+            {
+                "name": "name",
+                "type": "string",
+                "nullable": True,
+                "metadata": {"comment": "Customer name."},
+            },
+        ],
+    }
+    assert actual == expected
+
+
+def test_write_should_give_output_step_no_column_comment_when_contract_has_no_description(
+    spark: SparkSession, spark_job: JobStub, tmp_path: Path
+):
+    # Arrange
+    registry = FileSchemaRegistry(location=str(tmp_path / "schemas"))
+    registry.register(
+        "orders",
+        Schema(name="orders").integer("id", description="Order id.").string("name"),
+    )
+    df = spark.createDataFrame(
+        [(1, "alice")],
+        schema="`id` INT, `name` STRING",
+    )
+
+    # Act
+    with Context.for_job(spark_job, registries=Registries(schema=registry)):
+        step = OutputStub(name="orders_output", schema_subject="orders")
+        result = step.write(df)
+
+    # Assert
+    actual = result.schema.jsonValue()
+    expected = {
+        "type": "struct",
+        "fields": [
+            {
+                "name": "id",
+                "type": "integer",
+                "nullable": True,
+                "metadata": {"comment": "Order id."},
+            },
+            {"name": "name", "type": "string", "nullable": True, "metadata": {}},
+        ],
     }
     assert actual == expected
 

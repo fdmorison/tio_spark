@@ -222,6 +222,22 @@ Both formats log the same fields. A metric is `None` when it is unknown, which i
 
 If the metrics cannot be read, a warning is logged, every metric is `None`, and the job continues. The write is not affected.
 
+## Column Comments
+
+If the step sets [`schema_subject`](https://github.com/fdmorison/tiozin/blob/main/docs/how-to/schemas.md#attach-a-schema-to-a-step), the DataFrame the output writes carries each description from that schema as the column comment. Columns without a description in the schema get no comment.
+
+When the write creates the table, those comments show up in [`DESCRIBE TABLE`](https://spark.apache.org/docs/latest/sql-ref-syntax-aux-describe-table.html).
+
+```yaml
+outputs:
+  - kind: SparkTableOutput
+    name: save_customers
+    table: example.{{domain}}_{{layer}}.{{product}}_{{model}}
+    schema_subject: auto
+# → id: comment "Unique customer identifier"
+# → _raw_run_id: no comment
+```
+
 ## Lineage
 
 The table is reported as the dataset written by this step. The catalog becomes the dataset namespace, and `schema.table` becomes the dataset name.

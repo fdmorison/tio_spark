@@ -63,6 +63,22 @@ outputs:
     compression: gzip
 ```
 
+## Column Comments
+
+If the step sets [`schema_subject`](https://github.com/fdmorison/tiozin/blob/main/docs/how-to/schemas.md#attach-a-schema-to-a-step), the DataFrame the output writes carries each description from that schema as the column comment. Columns without a description in the schema get no comment.
+
+```yaml
+outputs:
+  - kind: SparkFileOutput
+    name: save_customers
+    path: .output/lake-{{domain}}-{{layer}}/{{product}}/{{model}}
+    format: parquet
+    mode: overwrite
+    schema_subject: auto
+# → id: comment "Unique customer identifier"
+# → _raw_run_id: no comment
+```
+
 ## Lineage
 
 The output path is reported as the dataset written by this step following the [OpenLineage naming spec](https://openlineage.io/docs/spec/naming/).
