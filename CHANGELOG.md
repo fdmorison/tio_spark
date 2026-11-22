@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.4](https://github.com/fdmorison/tio_spark/compare/tio_spark-v0.1.3...tio_spark-v0.1.4) (2026-11-22)
+
+
+### Features
+
+* **tio_spark:** Carry column metadata from the schema registry through every step ([#16](https://github.com/fdmorison/tio_spark/issues/16)) ([8137b1b](https://github.com/fdmorison/tio_spark/commit/8137b1bab98edf11b50dc89eb45671b9424a0eaf))
+* **tio_spark:** Send field descriptions to lineage registry ([#14](https://github.com/fdmorison/tio_spark/issues/14)) ([9840472](https://github.com/fdmorison/tio_spark/commit/9840472ef68eb507ca714184823f14b439ec06ec))
+
 ## [0.1.3](https://github.com/fdmorison/tio_spark/compare/tio_spark-v0.1.2...tio_spark-v0.1.3) (2026-11-22)
 
 
