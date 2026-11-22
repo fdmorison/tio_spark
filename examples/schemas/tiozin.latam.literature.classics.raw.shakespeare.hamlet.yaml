@@ -1,0 +1,12 @@
+name: hamlet
+physicalName: hamlet
+physicalType: table
+description: Raw text of Hamlet, one row per line.
+
+properties:
+
+  - name: value
+    logicalType: string
+    physicalType: string
+    required: true
+    description: One line of the play
