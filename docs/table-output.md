@@ -222,6 +222,22 @@ Both formats log the same fields. A metric is `None` when it is unknown, which i
 
 If the metrics cannot be read, a warning is logged, every metric is `None`, and the job continues. The write is not affected.
 
+## Column Comments
+
+If the step sets [`schema_subject`](https://github.com/fdmorison/tiozin/blob/main/docs/how-to/schemas.md#attach-a-schema-to-a-step), the DataFrame the output writes carries each description from that schema as the column comment. Columns without a description in the schema get no comment from it, but keep any comment they already carry from an earlier step.
+
+When the write creates the table, those comments show up in [`DESCRIBE TABLE`](https://spark.apache.org/docs/latest/sql-ref-syntax-aux-describe-table.html).
+
+```yaml
+outputs:
+  - kind: SparkTableOutput
+    name: save_customers
+    table: example.{{domain}}_{{layer}}.{{product}}_{{model}}
+    schema_subject: auto
+# → id: comment "Unique customer identifier"
+# → _raw_run_id: no comment
+```
+
 ## Lineage
 
 The table is reported as the dataset written by this step. The catalog becomes the dataset namespace, and `schema.table` becomes the dataset name.
@@ -232,7 +248,7 @@ table: my_catalog.default.sales
 # → name: default.sales
 ```
 
-The dataset also carries the [schema](https://openlineage.io/docs/spec/facets/dataset-facets/schema) of the DataFrame, so its columns and types always match the data. If the step sets [`schema_subject`](https://github.com/fdmorison/tiozin/blob/main/docs/how-to/schemas.md#attach-a-schema-to-a-step), the field descriptions from the registry schema are added to the columns with the same name. Columns that are not in the registry schema, such as ones added by a transform, are reported without a description.
+The dataset also carries the [schema](https://openlineage.io/docs/spec/facets/dataset-facets/schema) of the DataFrame, so its columns and types always match the data. If the step sets [`schema_subject`](https://github.com/fdmorison/tiozin/blob/main/docs/how-to/schemas.md#attach-a-schema-to-a-step), the field descriptions from the registry schema are added to the columns with the same name. Columns that are not in the registry schema keep any description they carry from an earlier step, such as an input that set `schema_subject`. Columns with no description anywhere, such as ones added by a transform, are reported without one.
 
 See [How to Configure OpenLineage](https://github.com/fdmorison/tiozin/blob/main/docs/how-to/openlineage.md) for how datasets are emitted, and the [OpenLineage naming spec](https://openlineage.io/docs/spec/naming/) for the naming conventions.
 

@@ -121,6 +121,23 @@ Any property not listed in the parameters table is passed to Spark as a reader o
 
 Reader options are not applied when reading with `query`, `version`, or `timestamp`.
 
+## Column Comments
+
+If the step sets [`schema_subject`](https://github.com/fdmorison/tiozin/blob/main/docs/how-to/schemas.md#attach-a-schema-to-a-step), the DataFrame it reads carries each description from that schema as the column comment, and the next steps receive those columns. Columns without a description in the schema get no comment from it.
+
+Spark keeps column comments on columns passed along unchanged, such as with `SELECT *`, so a description set on an input can reach the written data even when the output sets no `schema_subject`.
+
+```yaml
+inputs:
+  - kind: SparkTableInput
+    name: load_customers
+    layer: raw
+    model: customers
+    table: example.{{domain}}_{{layer}}.{{product}}_{{model}}
+    schema_subject: auto
+# → id: comment "Unique customer identifier"
+```
+
 ## Lineage
 
 The tables read are reported as the input datasets of this step. With `table`, that is the table itself. With `query`, it is every table the query references, including joined tables.
@@ -133,7 +150,7 @@ table: my_catalog.default.sales
 # → name: default.sales
 ```
 
-The step also reports the [schema](https://openlineage.io/docs/spec/facets/dataset-facets/schema) of the DataFrame it reads, so the columns and types always match the data. If the step sets [`schema_subject`](https://github.com/fdmorison/tiozin/blob/main/docs/how-to/schemas.md#attach-a-schema-to-a-step), the field descriptions from the registry schema are added to the columns with the same name. Columns that are not in the registry schema are reported without a description.
+The step also reports the [schema](https://openlineage.io/docs/spec/facets/dataset-facets/schema) of the DataFrame it reads, so the columns and types always match the data. If the step sets [`schema_subject`](https://github.com/fdmorison/tiozin/blob/main/docs/how-to/schemas.md#attach-a-schema-to-a-step), the field descriptions from the registry schema are added to the columns with the same name. Columns that are not in the registry schema keep any comment the data already carries as their description, and the rest are reported without one.
 
 See [How to Configure OpenLineage](https://github.com/fdmorison/tiozin/blob/main/docs/how-to/openlineage.md) for how datasets are emitted, and the [OpenLineage naming spec](https://openlineage.io/docs/spec/naming/) for the naming conventions.
 

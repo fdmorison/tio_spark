@@ -9,7 +9,7 @@ from tiozin.api.metadata.bundle import Registries
 from tiozin.family.tio_kernel import FileSchemaRegistry
 from tiozin.utils.runtime import tio_alias
 
-from tests.stubs import JobStub, TransformStub
+from tests.stubs import JobStub, OutputStub, TransformStub
 from tio_spark import SparkFileInput, SparkFileOutput, SparkWordCountTransform
 from tio_spark.compose.step_proxy import SparkStepProxy
 
@@ -70,6 +70,7 @@ def test_proxy_should_register_view_using_step_name_when_dataframe_is_spark_conn
     step = SparkStepProxy(TransformStub(name="connect step"))
     df = MagicMock(spec=ConnectDataFrame)
     df.schema = StructType([StructField("value", StringType())])
+    df.to.return_value = df
 
     # Act
     step.transform(df)
@@ -274,6 +275,90 @@ def test_write_should_keep_dataframe_structure_when_contract_differs(
     assert actual == expected
 
 
+# =============================================================================
+# Testing SparkStepProxy.write — contract descriptions as column comments
+# =============================================================================
+
+
+def test_write_should_give_output_step_contract_descriptions_as_column_comments(
+    spark: SparkSession, spark_job: JobStub, tmp_path: Path
+):
+    # Arrange
+    registry = FileSchemaRegistry(location=str(tmp_path / "schemas"))
+    registry.register(
+        "orders",
+        Schema(name="orders")
+        .integer("id", description="Order id.")
+        .string("name", description="Customer name."),
+    )
+    df = spark.createDataFrame(
+        [(1, "alice")],
+        schema="`id` INT, `name` STRING",
+    )
+
+    # Act
+    with Context.for_job(spark_job, registries=Registries(schema=registry)):
+        step = OutputStub(name="orders_output", schema_subject="orders")
+        result = step.write(df)
+
+    # Assert
+    actual = result.schema.jsonValue()
+    expected = {
+        "type": "struct",
+        "fields": [
+            {
+                "name": "id",
+                "type": "integer",
+                "nullable": True,
+                "metadata": {"comment": "Order id."},
+            },
+            {
+                "name": "name",
+                "type": "string",
+                "nullable": True,
+                "metadata": {"comment": "Customer name."},
+            },
+        ],
+    }
+    assert actual == expected
+
+
+def test_write_should_give_output_step_no_column_comment_when_contract_has_no_description(
+    spark: SparkSession, spark_job: JobStub, tmp_path: Path
+):
+    # Arrange
+    registry = FileSchemaRegistry(location=str(tmp_path / "schemas"))
+    registry.register(
+        "orders",
+        Schema(name="orders").integer("id", description="Order id.").string("name"),
+    )
+    df = spark.createDataFrame(
+        [(1, "alice")],
+        schema="`id` INT, `name` STRING",
+    )
+
+    # Act
+    with Context.for_job(spark_job, registries=Registries(schema=registry)):
+        step = OutputStub(name="orders_output", schema_subject="orders")
+        result = step.write(df)
+
+    # Assert
+    actual = result.schema.jsonValue()
+    expected = {
+        "type": "struct",
+        "fields": [
+            {
+                "name": "id",
+                "type": "integer",
+                "nullable": True,
+                "metadata": {"comment": "Order id."},
+            },
+            {"name": "name", "type": "string", "nullable": True, "metadata": {}},
+        ],
+    }
+    assert actual == expected
+
+
 def test_read_should_document_output_schema_from_contract(spark_job: JobStub, tmp_path: Path):
     # Arrange
     registry = FileSchemaRegistry(location=str(tmp_path / "schemas"))
@@ -342,5 +427,99 @@ def test_transform_should_document_output_schema_from_contract(
             {"name": "count", "type": "long", "nullable": False, "metadata": {}},
         ],
         "metadata": {},
+    }
+    assert actual == expected
+
+
+# =============================================================================
+# Testing SparkStepProxy.read and transform — contract descriptions as column comments
+# =============================================================================
+
+
+def test_read_should_give_input_step_contract_descriptions_as_column_comments(
+    spark_job: JobStub, tmp_path: Path
+):
+    # Arrange
+    registry = FileSchemaRegistry(location=str(tmp_path / "schemas"))
+    registry.register(
+        "orders",
+        Schema(name="orders")
+        .integer("id", description="Order id.")
+        .string("name", description="Customer name."),
+    )
+    source = tmp_path / "orders.json"
+    source.write_text('{"id": 1, "name": "alice"}')
+
+    # Act
+    with Context.for_job(spark_job, registries=Registries(schema=registry)):
+        step = SparkFileInput(
+            name="orders_input",
+            path=str(source),
+            format="json",
+            schema_subject="orders",
+        )
+        result = step.read()
+
+    # Assert
+    actual = result.schema.jsonValue()
+    expected = {
+        "type": "struct",
+        "fields": [
+            {
+                "name": "id",
+                "type": "long",
+                "nullable": True,
+                "metadata": {"comment": "Order id."},
+            },
+            {
+                "name": "name",
+                "type": "string",
+                "nullable": True,
+                "metadata": {"comment": "Customer name."},
+            },
+        ],
+    }
+    assert actual == expected
+
+
+def test_transform_should_give_transform_step_contract_descriptions_as_column_comments(
+    spark: SparkSession, spark_job: JobStub, tmp_path: Path
+):
+    # Arrange
+    registry = FileSchemaRegistry(location=str(tmp_path / "schemas"))
+    registry.register(
+        "word_counts",
+        Schema(name="word_counts")
+        .string("word", description="A word from the text.")
+        .integer("count", description="Occurrences of the word."),
+    )
+    df = spark.createDataFrame(
+        [("hello world",)],
+        schema="`value` STRING",
+    )
+
+    # Act
+    with Context.for_job(spark_job, registries=Registries(schema=registry)):
+        step = SparkWordCountTransform(name="word_count", schema_subject="word_counts")
+        result = step.transform(df)
+
+    # Assert
+    actual = result.schema.jsonValue()
+    expected = {
+        "type": "struct",
+        "fields": [
+            {
+                "name": "word",
+                "type": "string",
+                "nullable": False,
+                "metadata": {"comment": "A word from the text."},
+            },
+            {
+                "name": "count",
+                "type": "long",
+                "nullable": False,
+                "metadata": {"comment": "Occurrences of the word."},
+            },
+        ],
     }
     assert actual == expected
