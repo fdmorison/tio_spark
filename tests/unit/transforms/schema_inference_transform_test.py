@@ -6,6 +6,7 @@ from py4j.protocol import Py4JJavaError
 from pyspark.sql import SparkSession
 from pyspark.sql.utils import AnalysisException
 from pyspark.testing import assertDataFrameEqual
+from tiozin.exceptions import SchemaError
 
 from tio_spark import SparkSchemaInferenceTransform
 
@@ -250,7 +251,7 @@ def test_transform_should_preserve_columns_not_in_json_columns(spark: SparkSessi
     assertDataFrameEqual(actual, expected)
 
 
-def test_transform_should_not_handle_duplicated_columns_when_flattening(
+def test_transform_should_raise_schema_error_when_flattening_produces_duplicated_columns(
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -264,19 +265,13 @@ def test_transform_should_not_handle_duplicated_columns_when_flattening(
         schema="user STRING, address STRING",
     )
 
-    # Act
-    actual = SparkSchemaInferenceTransform(
-        name="test",
-        json_fields=["user", "address"],
-        unnest_fields=["user", "address"],
-    ).transform(input)
-
-    # Assert
-    expected = spark.createDataFrame(
-        [(30, "John", "New York", "Home")],
-        schema="age BIGINT, name STRING, city STRING, name STRING",
-    )
-    assertDataFrameEqual(actual, expected)
+    # Act / Assert
+    with pytest.raises(SchemaError, match="Duplicate property `name`"):
+        SparkSchemaInferenceTransform(
+            name="test",
+            json_fields=["user", "address"],
+            unnest_fields=["user", "address"],
+        ).transform(input)
 
 
 # ============================================================================

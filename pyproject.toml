@@ -20,15 +20,12 @@ classifiers = [
 ]
 
 dependencies = [
-  "tiozin >=5.0.0",
+  "tiozin >=6.0.0",
 ]
 
 [project.optional-dependencies]
 pyspark = [
   "pyspark[connect] >=3.5.0",
-  # NOTE: Temporary dependencies (to be removed)
-  # Required due to unnecessary runtime imports in datacontract-cli schema converters
-  "databricks-sdk ~=0.102.0",
 ]
 pyspark35 = [
   "tio_spark[pyspark]",
