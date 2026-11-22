@@ -3,6 +3,7 @@ from unittest.mock import MagicMock
 
 from pyspark.sql import SparkSession
 from pyspark.sql.connect.dataframe import DataFrame as ConnectDataFrame
+from pyspark.sql.types import StringType, StructField, StructType
 from tiozin import Context, Schema
 from tiozin.utils.runtime import tio_alias
 
@@ -66,6 +67,7 @@ def test_proxy_should_register_view_using_step_name_when_dataframe_is_spark_conn
     # Arrange
     step = SparkStepProxy(TransformStub(name="connect step"))
     df = MagicMock(spec=ConnectDataFrame)
+    df.schema = StructType([StructField("value", StringType())])
 
     # Act
     step.transform(df)
