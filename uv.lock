@@ -2985,7 +2985,7 @@ test = [
 
 [[package]]
 name = "tiozin"
-version = "6.0.0"
+version = "6.0.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "environs" },
@@ -3007,9 +3007,9 @@ dependencies = [
     { name = "uuid-utils" },
     { name = "wrapt" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/8a/e4/5b3db9226115ba867612eba61e74e720918dfa5f0ae730e90a6c39fae34a/tiozin-6.0.0.tar.gz", hash = "sha256:8c9d8ad61e2f46c12146509ae05b5d42612396b825fe2bb3e3f3529422ddfad5", size = 144499, upload-time = "2026-11-22T01:31:43.927Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/48/fc/ebca4ab5f701ecb68d5d1ebd79df52aec9e3c078c38de3b95299548f0822/tiozin-6.0.2.tar.gz", hash = "sha256:a98f0367e19038b2d54c01363f4384cb70f9764bff2b456a45b0ee093f26212a", size = 144489, upload-time = "2026-11-22T15:47:35.779Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ce/77/b93316a25d29b7f0a528da82aded95c2ea048d0c52d15555ecce91c26618/tiozin-6.0.0-py3-none-any.whl", hash = "sha256:f9b48c6de47dedba952ac6609adf68043e241e02285951a7cd3ad48fb04ead78", size = 223948, upload-time = "2026-11-22T01:31:42.851Z" },
+    { url = "https://files.pythonhosted.org/packages/45/80/d53fd9082b942564d98a0c9a10c26eada9929a2d2289035f5f6ad4ca0cfd/tiozin-6.0.2-py3-none-any.whl", hash = "sha256:a2f16f4e32e07e6ee7b9190a0d6730d10c495f04df0a9871eb7914c527d0e5cd", size = 223949, upload-time = "2026-11-22T15:47:34.79Z" },
 ]
 
 [[package]]
