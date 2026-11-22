@@ -9,6 +9,9 @@ All other modules and classes inside this package are internal implementation
 details and may change without notice.
 """
 
+# Environment
+from . import env  # noqa: F401
+
 # Public base abstractions
 from .bases import (
     SparkCoTransform,
