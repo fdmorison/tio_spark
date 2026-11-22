@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.5](https://github.com/fdmorison/tio_spark/compare/tio_spark-v0.1.4...tio_spark-v0.1.5) (2026-11-22)
+
+
+### Bug Fixes
+
+* **tio_spark:** Let the project .env win over shell variables ([#18](https://github.com/fdmorison/tio_spark/issues/18)) ([2c5051f](https://github.com/fdmorison/tio_spark/commit/2c5051f15b95901d7e87d84b263ed788b29183da))
+
 ## [0.1.4](https://github.com/fdmorison/tio_spark/compare/tio_spark-v0.1.3...tio_spark-v0.1.4) (2026-11-22)
 
 
