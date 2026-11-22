@@ -14,8 +14,7 @@ The family is registered through the `tiozin.family` entry point in `pyproject.t
 ## Commands
 
 ```bash
-make install      # Install dependencies
-make install-dev  # Install everything needed to develop locally
+make install      # Install everything needed to develop locally
 make format       # Format and fix code
 make check        # Verify code style — fails if violations are found
 make test         # Run full test suite

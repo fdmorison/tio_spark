@@ -8,13 +8,13 @@ hooks:
 	@uv run pre-commit install
 
 install:
-	@rm -rf .venv
 	@uv sync --extra pyspark35
 	@uv pip install -e .
+	@uv run pre-commit install
+	@rm -rf *.egg-info
 
-install-dev:
-	@rm -rf .venv
-	@uv sync --extra pyspark35
+install40:
+	@uv sync --extra pyspark40
 	@uv pip install -e .
 	@uv run pre-commit install
 	@rm -rf *.egg-info
