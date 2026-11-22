@@ -66,3 +66,17 @@ outputs:
 ## Lineage
 
 The output path is reported as the dataset written by this step following the [OpenLineage naming spec](https://openlineage.io/docs/spec/naming/).
+
+The dataset also carries the [schema](https://openlineage.io/docs/spec/facets/dataset-facets/schema) of the DataFrame, so its columns and types always match the data. If the step sets [`schema_subject`](https://github.com/fdmorison/tiozin/blob/main/docs/how-to/schemas.md#attach-a-schema-to-a-step), the field descriptions from the registry schema are added to the columns with the same name. Columns that are not in the registry schema, such as ones added by a transform, are reported without a description.
+
+```yaml
+outputs:
+  - kind: SparkFileOutput
+    name: save_customers
+    path: .output/lake-{{domain}}-{{layer}}/{{product}}/{{model}}
+    format: parquet
+    mode: overwrite
+    schema_subject: auto
+# → id: Unique customer identifier
+# → _raw_run_id: no description
+```
