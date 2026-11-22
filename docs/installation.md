@@ -49,7 +49,9 @@ SPARK_HOME=.venv/lib/python3.11/site-packages/pyspark
 # → the job runs with SPARK_HOME=.venv/lib/python3.11/site-packages/pyspark
 ```
 
-Point `SPARK_HOME` at a Spark installation that matches the installed [PySpark](https://spark.apache.org/docs/latest/api/python/getting_started/install.html) version. On a cluster that already provides Spark, a `SPARK_HOME` in the project `.env` file replaces the cluster's own.
+Setting `SPARK_HOME` in the project `.env` file is meant for local development. For local runs, point it at a Spark installation that matches the installed [PySpark](https://spark.apache.org/docs/latest/api/python/getting_started/install.html) version.
+
+On a cluster that already provides Spark, leave `SPARK_HOME` out of the `.env` file. A `SPARK_HOME` there replaces the cluster's own.
 
 ## Installing Through Tiozin
 
