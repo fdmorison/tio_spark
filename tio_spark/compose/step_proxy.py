@@ -3,9 +3,9 @@ from typing import TYPE_CHECKING
 import wrapt
 from pyspark.sql import DataFrame
 from pyspark.sql.connect.dataframe import DataFrame as ConnectDataFrame
-from pyspark.sql.types import StructType
-from tiozin import Schema
 from tiozin.utils.runtime import tio_alias
+
+from .. import dataframe_utils as dfu
 
 if TYPE_CHECKING:
     from ..typehints import SparkEtlStep, SparkPlan
@@ -57,12 +57,11 @@ class SparkStepProxy(wrapt.ObjectProxy):
         unchanged, as they represent terminal actions.
         """
         step: SparkEtlStep = self.__wrapped__
-        observed = Schema.from_spark(data.schema.jsonValue())
+        observed = dfu.as_tiozin_schema(data)
         contract = step.context.output_schema
         step.context.output_schema = observed.document_from(contract) if contract else observed
 
-        # Enrich the DataFrame schema with metadata from the contract
-        data = data.to(StructType.fromJson(step.context.output_schema.to_spark()))
+        data = dfu.with_schema_metadata(data, step.context.output_schema)
 
         df_or_writer: SparkPlan = step.write(data)
         return self._register_view(df_or_writer)
@@ -77,10 +76,10 @@ class SparkStepProxy(wrapt.ObjectProxy):
             return df
 
         step: SparkEtlStep = self.__wrapped__
-        observed = Schema.from_spark(df.schema.jsonValue())
+        observed = dfu.as_tiozin_schema(df)
         contract = step.context.output_schema
         step.context.output_schema = observed.document_from(contract) if contract else observed
-        df = df.to(StructType.fromJson(step.context.output_schema.to_spark()))
+        df = dfu.with_schema_metadata(df, step.context.output_schema)
 
         view_name = step.name
 
