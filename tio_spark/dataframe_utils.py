@@ -87,8 +87,10 @@ def with_schema_metadata(
     Applies the metadata of a schema, such as field descriptions, to the
     fields of a DataFrame.
 
-    The schema must have the same fields and types as the DataFrame. Otherwise
-    fields are also reordered, cast or dropped to match it.
+    The structure of the DataFrame does not change: its fields keep their
+    order and types, even when the schema declares other types. Fields
+    missing from the schema keep their own metadata, and fields missing from
+    the DataFrame are ignored.
 
     Args:
         df:
@@ -102,15 +104,17 @@ def with_schema_metadata(
 
     Example:
         ```python
-        schema = as_tiozin_schema(df).document_from(contract)
+        contract = Schema(name="users").string("name", description="Full name")
 
-        with_schema_metadata(df, schema)
-        # the fields of df now carry the descriptions of the contract
+        with_schema_metadata(df, contract)
+        # the name field of df now carries the description "Full name"
         ```
     """
-    documented = df.to(as_spark_schema(schema))
-
-    return documented
+    observed_schema = as_tiozin_schema(df)
+    contract_schema = as_tiozin_schema(schema)
+    documented = observed_schema.document_from(contract_schema)
+    enriched = df.to(as_spark_schema(documented))
+    return enriched
 
 
 def enforce_schema(
