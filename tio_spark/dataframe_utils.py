@@ -13,6 +13,7 @@ from pyspark.sql import functions as sf
 from pyspark.sql.connect.dataframe import DataFrame as ConnectDataFrame
 from pyspark.sql.types import ArrayType, DataType, MapType, StructField, StructType
 from tiozin import Schema
+from tiozin.exceptions import RequiredArgumentError
 
 
 def as_spark_schema(
@@ -81,7 +82,7 @@ def as_tiozin_schema(
 
 def with_schema_metadata(
     df: DataFrame,
-    schema: Schema | StructType | str | dict[str, Any],
+    schema: Schema | StructType | str | dict[str, Any] = None,
 ) -> DataFrame:
     """
     Applies the metadata of a schema, such as field descriptions, to the
@@ -97,10 +98,14 @@ def with_schema_metadata(
             The DataFrame that receives the metadata.
         schema:
             The schema that holds the metadata, as a Tiozin Schema, a
-            StructType, a Spark DDL string or a Spark JSON schema dict.
+            StructType, a Spark DDL string or a Spark JSON schema dict. When
+            None, the DataFrame is returned as is.
 
     Returns:
         A new DataFrame with the metadata of the schema in its fields.
+
+    Raises:
+        RequiredArgumentError: If the DataFrame is missing.
 
     Example:
         ```python
@@ -110,6 +115,13 @@ def with_schema_metadata(
         # the name field of df now carries the description "Full name"
         ```
     """
+    RequiredArgumentError.raise_if_missing(
+        df=df,
+    )
+
+    if schema is None:
+        return df
+
     observed_schema = as_tiozin_schema(df)
     contract_schema = as_tiozin_schema(schema)
 

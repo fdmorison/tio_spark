@@ -19,6 +19,7 @@ from pyspark.sql.types import (
 )
 from pyspark.testing import assertDataFrameEqual
 from tiozin import Schema
+from tiozin.exceptions import RequiredArgumentError
 
 from tio_spark.dataframe_utils import (
     as_spark_schema,
@@ -231,6 +232,36 @@ def test_as_tiozin_schema_should_parse_json_schema() -> None:
 # ============================================================================
 # with_schema_metadata
 # ============================================================================
+
+
+def test_with_schema_metadata_should_return_dataframe_as_is_when_schema_is_none(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    df = spark.createDataFrame(
+        [("Ana",)],
+        schema="name STRING",
+    )
+
+    # Act
+    result = with_schema_metadata(df, None)
+
+    # Assert
+    assert result is df
+
+
+def test_with_schema_metadata_should_raise_when_dataframe_is_missing() -> None:
+    # Arrange
+    schema = "id INT"
+
+    # Act
+    with pytest.raises(RequiredArgumentError) as exc_info:
+        with_schema_metadata(None, schema)
+
+    # Assert
+    actual = str(exc_info.value)
+    expected = "Missing required fields: 'df'"
+    assert actual == expected
 
 
 def test_with_schema_metadata_should_keep_data(spark: SparkSession) -> None:
