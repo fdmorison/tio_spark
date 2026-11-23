@@ -112,9 +112,11 @@ def with_schema_metadata(
     """
     observed_schema = as_tiozin_schema(df)
     contract_schema = as_tiozin_schema(schema)
-    documented = observed_schema.document_from(contract_schema)
-    enriched = df.to(as_spark_schema(documented))
-    return enriched
+
+    documented_schema = observed_schema.document_from(contract_schema)
+    enriched_df = df.to(as_spark_schema(documented_schema))
+
+    return enriched_df
 
 
 def enforce_schema(
