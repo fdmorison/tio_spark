@@ -136,6 +136,33 @@ def test_write_should_record_dataframe_schema_when_step_has_no_contract(
     assert actual == expected
 
 
+def test_transform_should_record_dataframe_schema_when_step_has_no_contract(
+    spark: SparkSession,
+):
+    # Arrange
+    df = spark.createDataFrame(
+        [("hello world",)],
+        schema="`value` STRING",
+    )
+
+    # Act
+    step = SparkWordCountTransform(name="word_count")
+    step.transform(df)
+
+    # Assert
+    outputs = Context.current().catalog.get_outputs(step)
+    actual = outputs[0].tiozin_schema.to_spark()
+    expected = {
+        "type": "struct",
+        "fields": [
+            {"name": "word", "type": "string", "nullable": False, "metadata": {}},
+            {"name": "count", "type": "long", "nullable": False, "metadata": {}},
+        ],
+        "metadata": {},
+    }
+    assert actual == expected
+
+
 # =============================================================================
 # Testing SparkStepProxy — output schema documented from the registry contract
 # =============================================================================
