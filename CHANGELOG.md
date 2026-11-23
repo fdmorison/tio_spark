@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.6](https://github.com/fdmorison/tio_spark/compare/tio_spark-v0.1.5...tio_spark-v0.1.6) (2026-11-23)
+
+
+### Features
+
+* **tio_spark:** Add utilities to manage DataFrame schemas ([#22](https://github.com/fdmorison/tio_spark/issues/22)) ([01ce070](https://github.com/fdmorison/tio_spark/commit/01ce0702034150f496280e103ec55dcf786f8249))
+
 ## [0.1.5](https://github.com/fdmorison/tio_spark/compare/tio_spark-v0.1.4...tio_spark-v0.1.5) (2026-11-22)
 
 
