@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.7](https://github.com/fdmorison/tio_spark/compare/tio_spark-v0.1.6...tio_spark-v0.1.7) (2026-11-26)
+
+
+### Bug Fixes
+
+* **tio_spark:** Fix `with_schema_metadata` dropping DataFrame columns ([#24](https://github.com/fdmorison/tio_spark/issues/24)) ([bf29549](https://github.com/fdmorison/tio_spark/commit/bf29549b9a8cd1541094bfa1dc9d0fb69d78ac63))
+
 ## [0.1.6](https://github.com/fdmorison/tio_spark/compare/tio_spark-v0.1.5...tio_spark-v0.1.6) (2026-11-23)
 
 
