@@ -13,6 +13,7 @@ from pyspark.sql import functions as sf
 from pyspark.sql.connect.dataframe import DataFrame as ConnectDataFrame
 from pyspark.sql.types import ArrayType, DataType, MapType, StructField, StructType
 from tiozin import Schema
+from tiozin.exceptions import RequiredArgumentError
 
 
 def as_spark_schema(
@@ -81,36 +82,53 @@ def as_tiozin_schema(
 
 def with_schema_metadata(
     df: DataFrame,
-    schema: Schema | StructType | str | dict[str, Any],
+    schema: Schema | StructType | str | dict[str, Any] = None,
 ) -> DataFrame:
     """
     Applies the metadata of a schema, such as field descriptions, to the
     fields of a DataFrame.
 
-    The schema must have the same fields and types as the DataFrame. Otherwise
-    fields are also reordered, cast or dropped to match it.
+    The structure of the DataFrame does not change: its fields keep their
+    order and types, even when the schema declares other types. Fields
+    missing from the schema keep their own metadata, and fields missing from
+    the DataFrame are ignored.
 
     Args:
         df:
             The DataFrame that receives the metadata.
         schema:
             The schema that holds the metadata, as a Tiozin Schema, a
-            StructType, a Spark DDL string or a Spark JSON schema dict.
+            StructType, a Spark DDL string or a Spark JSON schema dict. When
+            None, the DataFrame is returned as is.
 
     Returns:
         A new DataFrame with the metadata of the schema in its fields.
 
+    Raises:
+        RequiredArgumentError: If the DataFrame is missing.
+
     Example:
         ```python
-        schema = as_tiozin_schema(df).document_from(contract)
+        contract = Schema(name="users").string("name", description="Full name")
 
-        with_schema_metadata(df, schema)
-        # the fields of df now carry the descriptions of the contract
+        with_schema_metadata(df, contract)
+        # the name field of df now carries the description "Full name"
         ```
     """
-    documented = df.to(as_spark_schema(schema))
+    RequiredArgumentError.raise_if_missing(
+        df=df,
+    )
 
-    return documented
+    if schema is None:
+        return df
+
+    observed_schema = as_tiozin_schema(df)
+    contract_schema = as_tiozin_schema(schema)
+
+    documented_schema = observed_schema.document_from(contract_schema)
+    enriched_df = df.to(as_spark_schema(documented_schema))
+
+    return enriched_df
 
 
 def enforce_schema(

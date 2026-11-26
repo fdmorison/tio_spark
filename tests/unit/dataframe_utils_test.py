@@ -19,6 +19,7 @@ from pyspark.sql.types import (
 )
 from pyspark.testing import assertDataFrameEqual
 from tiozin import Schema
+from tiozin.exceptions import RequiredArgumentError
 
 from tio_spark.dataframe_utils import (
     as_spark_schema,
@@ -233,6 +234,36 @@ def test_as_tiozin_schema_should_parse_json_schema() -> None:
 # ============================================================================
 
 
+def test_with_schema_metadata_should_return_dataframe_as_is_when_schema_is_none(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    df = spark.createDataFrame(
+        [("Ana",)],
+        schema="name STRING",
+    )
+
+    # Act
+    result = with_schema_metadata(df, None)
+
+    # Assert
+    assert result is df
+
+
+def test_with_schema_metadata_should_raise_when_dataframe_is_missing() -> None:
+    # Arrange
+    schema = "id INT"
+
+    # Act
+    with pytest.raises(RequiredArgumentError) as exc_info:
+        with_schema_metadata(None, schema)
+
+    # Assert
+    actual = str(exc_info.value)
+    expected = "Missing required fields: 'df'"
+    assert actual == expected
+
+
 def test_with_schema_metadata_should_keep_data(spark: SparkSession) -> None:
     # Arrange
     df = spark.createDataFrame(
@@ -318,6 +349,126 @@ def test_with_schema_metadata_should_apply_struct_field_metadata(spark: SparkSes
                     ]
                 ),
             ),
+        ]
+    )
+    assert actual == expected
+
+
+def test_with_schema_metadata_should_keep_columns_missing_from_schema(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    df = spark.createDataFrame(
+        [(1, "Ana")],
+        schema="id INT, name STRING",
+    )
+    schema = Schema(name="users").string("name", description="Full name")
+
+    # Act
+    result = with_schema_metadata(df, schema)
+
+    # Assert
+    actual = result
+    expected = spark.createDataFrame(
+        [(1, "Ana")],
+        schema="id INT, name STRING",
+    )
+    assertDataFrameEqual(actual, expected)
+
+
+def test_with_schema_metadata_should_keep_own_metadata_of_columns_missing_from_schema(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    df = spark.createDataFrame(
+        [(1, "Ana")],
+        schema="id INT, name STRING",
+    ).withMetadata("id", {"comment": "Own id doc"})
+    schema = Schema(name="users").string("name", description="Full name")
+
+    # Act
+    result = with_schema_metadata(df, schema)
+
+    # Assert
+    actual = result.schema
+    expected = StructType(
+        [
+            StructField("id", IntegerType(), metadata={"comment": "Own id doc"}),
+            StructField("name", StringType(), metadata={"comment": "Full name"}),
+        ]
+    )
+    assert actual == expected
+
+
+def test_with_schema_metadata_should_keep_dataframe_field_order(spark: SparkSession) -> None:
+    # Arrange
+    df = spark.createDataFrame(
+        [(1, "Ana")],
+        schema="id INT, name STRING",
+    )
+    schema = (
+        Schema(name="users")
+        .string("name", description="Full name")
+        .int32("id", description="User id")
+    )
+
+    # Act
+    result = with_schema_metadata(df, schema)
+
+    # Assert
+    actual = result.schema
+    expected = StructType(
+        [
+            StructField("id", IntegerType(), metadata={"comment": "User id"}),
+            StructField("name", StringType(), metadata={"comment": "Full name"}),
+        ]
+    )
+    assert actual == expected
+
+
+def test_with_schema_metadata_should_keep_dataframe_field_types(spark: SparkSession) -> None:
+    # Arrange
+    df = spark.createDataFrame(
+        [(1,)],
+        schema="id INT",
+    )
+    schema = Schema(name="users").string("id", description="User id")
+
+    # Act
+    result = with_schema_metadata(df, schema)
+
+    # Assert
+    actual = result.schema
+    expected = StructType(
+        [
+            StructField("id", IntegerType(), metadata={"comment": "User id"}),
+        ]
+    )
+    assert actual == expected
+
+
+def test_with_schema_metadata_should_ignore_schema_fields_missing_from_dataframe(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    df = spark.createDataFrame(
+        [("Ana",)],
+        schema="name STRING",
+    )
+    schema = (
+        Schema(name="users")
+        .string("name", description="Full name")
+        .string("ghost", description="Not in the DataFrame")
+    )
+
+    # Act
+    result = with_schema_metadata(df, schema)
+
+    # Assert
+    actual = result.schema
+    expected = StructType(
+        [
+            StructField("name", StringType(), metadata={"comment": "Full name"}),
         ]
     )
     assert actual == expected

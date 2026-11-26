@@ -57,11 +57,8 @@ class SparkStepProxy(wrapt.ObjectProxy):
         unchanged, as they represent terminal actions.
         """
         step: SparkEtlStep = self.__wrapped__
-        observed = dfu.as_tiozin_schema(data)
-        contract = step.context.output_schema
-        step.context.output_schema = observed.document_from(contract) if contract else observed
-
         data = dfu.with_schema_metadata(data, step.context.output_schema)
+        step.context.output_schema = dfu.as_tiozin_schema(data)
 
         df_or_writer: SparkPlan = step.write(data)
         return self._register_view(df_or_writer)
@@ -76,10 +73,8 @@ class SparkStepProxy(wrapt.ObjectProxy):
             return df
 
         step: SparkEtlStep = self.__wrapped__
-        observed = dfu.as_tiozin_schema(df)
-        contract = step.context.output_schema
-        step.context.output_schema = observed.document_from(contract) if contract else observed
         df = dfu.with_schema_metadata(df, step.context.output_schema)
+        step.context.output_schema = dfu.as_tiozin_schema(df)
 
         view_name = step.name
 
